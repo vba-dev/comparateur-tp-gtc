@@ -2,13 +2,100 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Accueil</title>
+  <title>Outils Axione</title>
+  <style>
+    :root {
+      --aquamarine: #01ECA6;
+      --penn-blue: #201E5B;
+      --text-light: #F0F0F0;
+      --bg-dark: rgba(32, 30, 91, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0f23, #1a1a3d);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      background: var(--bg-dark);
+      border: 2px solid var(--aquamarine);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 25px rgba(1, 236, 166, 0.15);
+      text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+
+    .logo img {
+      max-height: 80px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      margin: 1rem auto;
+      padding: 16px;
+      border-radius: 50px;
+      border: none;
+      background-color: var(--aquamarine);
+      color: var(--penn-blue);
+      font-weight: 700;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: white;
+      color: var(--penn-blue);
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9em;
+      text-align: center;
+      color: #aaa;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bienvenue</h1>
-  <ul>
-    <li><a href="Comparateur%20V3.1.html">Ouvrir le Comparateur</a></li>
-    <li><a href="Formulaire%20V11.html">Ouvrir le Formulaire</a></li>
-  </ul>
+  <div class="container">
+    <div class="logo">
+      <img src="https://www.axione.com/wp-content/uploads/2024/09/logo-header-home.svg" alt="Logo Axione">
+    </div>
+    <h1>Outils internes Axione</h1>
+
+    <a href="Comparateur%20V3.1.html" class="btn">🧠 Comparateur TP / SYSLOG</a>
+    <a href="Formulaire%20V11.html" class="btn">📝 Formulaire OP</a>
+
+    <footer>
+      Développé par Victor Barthélemy · GitHub Pages
+    </footer>
+  </div>
 </body>
 </html>
