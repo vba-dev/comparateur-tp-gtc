@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Filtre de tableau collé</title>
+  <style>
+    :root {
+      --aquamarine: #01ECA6;
+      --penn-blue: #201E5B;
+      --text-light: #F0F0F0;
+      --bg-dark: rgba(32, 30, 91, 0.8);
+      --glass-white: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0f23, #1a1a3d);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem;
+    }
+
+    .container {
+      background: var(--bg-dark);
+      border: 1px solid var(--aquamarine);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 1200px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(1, 236, 166, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo img {
+      max-height: 60px;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      color: var(--aquamarine);
+      text-align: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: var(--glass-white);
+      color: var(--text-light);
+      border: 1px solid var(--aquamarine);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      display: block;
+      width: 280px;
+      margin: 20px auto;
+      padding: 16px 0;
+      border-radius: 50px;
+      border: none;
+      background-color: var(--aquamarine);
+      color: var(--penn-blue);
+      font-weight: 700;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    button:hover {
+      background: #ffffff;
+      color: #000;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: var(--glass-white);
+      color: var(--text-light);
+    }
+
+    th, td {
+      border: 1px solid var(--aquamarine);
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    td[contenteditable] {
+      background-color: rgba(255, 255, 255, 0.05);
+      outline: none;
+    }
+
+    .commune-cell {
+      cursor: pointer;
+      color: var(--aquamarine);
+    }
+
+    .commune-cell::after {
+      content: ' [+] ';
+      font-size: 0.9em;
+      color: var(--aquamarine);
+	  font-weight: bold;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+.modal-content {
+  background: var(--penn-blue);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--aquamarine);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+}
+
+    #searchCommune {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid var(--aquamarine);
+      background: var(--glass-white);
+      color: var(--text-light);
+    }
+
+    .sollicitation-link {
+      color: var(--aquamarine);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .detail-cell {
+      min-width: 150px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://www.axione.com/wp-content/uploads/2024/09/logo-header-home.svg" alt="Logo Axione">
+    </div>
+    <h1>Formulaire des OP</h1>
+    <h2>Colle ici ton tableau</h2>
+    <textarea id="inputData" placeholder="Colle ici ton tableau Excel/CSV..."></textarea>
+    <button onclick="parseTable()">Générer tableau filtré</button>
+    <div id="tableContainer"></div>
+    <button onclick="copyHtmlTableToClipboard()">Copier le tableau</button>
+  </div>
+
+  <div id="communeModal" class="modal">
+    <div class="modal-content">
+      <h3>Modifier les communes</h3>
+      <input type="text" id="searchCommune" placeholder="Rechercher..." oninput="filterCommunes()">
+      <div id="modalOptions"></div>
+    </div>
+  </div>
+
+  <script>
+    const headersWanted = ["Sollicitation", "Type", "Titre", "T1", "Commune", "Détail"];
+const communesList = [
+  "AMBERIEU EN BUGEY",
+  "AMBERIEUX",
+  "AMBERIEUX EN DOMBES",
+  "AMBLEON",
+  "AMBRONAY",
+  "AMBUTRIX",
+  "ANDERT ET CONDON",
+  "ANGLEFORT",
+  "APREMONT",
+  "ARANC",
+  "ARANDAS",
+  "ARBENT",
+  "ARBIGNIEU",
+  "ARBIGNY",
+  "ARGIS",
+  "ARMIX",
+  "ARS SUR FORMANS",
+  "ARTEMARE",
+  "ASNIERES SUR SAONE",
+  "ATTIGNAT",
+  "BAGE DOMMARTIN",
+  "BAGE LE CHATEL",
+  "BALAN",
+  "BANEINS",
+  "BEARD-GEOVREISSIAT",
+  "BEAUPONT",
+  "BEAUREGARD",
+  "BELIGNEUX",
+  "BELLEGARDE SUR VALSERINE",
+  "BELLEY",
+  "BELLEYDOUX",
+  "BELLIGNAT",
+  "BELMONT LUTHEZIEU",
+  "BENONCES",
+  "BENY",
+  "BEON",
+  "BEREZIAT",
+  "BETTANT",
+  "BEY",
+  "BEYNOST",
+  "BILLIAT",
+  "BIRIEUX",
+  "BIZIAT",
+  "BLYES",
+  "BOHAS MEYRIAT RIGNAT",
+  "BOISSEY",
+  "BOLOZON",
+  "BOULIGNEUX",
+  "BOURG EN BRESSE",
+  "BOURG ST CHRISTOPHE",
+  "BOYEUX ST JEROME",
+  "BOZ",
+  "BRANGUES",
+  "BREGNIER CORDON",
+  "BRENAZ",
+  "BRENOD",
+  "BRENS",
+  "BRESSOLLES",
+  "BRION",
+  "BRIORD",
+  "BUELLAS",
+  "CAILLOUX SUR FONTAINES",
+  "CAILLOUX-SUR-FONTAINES",
+  "CEIGNES",
+  "CERDON",
+  "CERTINES",
+  "CESSY",
+  "CEYZERIAT",
+  "CEYZERIEU",
+  "CHALAMONT",
+  "CHALEINS",
+  "CHALEY",
+  "CHALLES LA MONTAGNE",
+  "CHALLEX",
+  "CHAMPAGNE EN VALROMEY",
+  "CHAMPDOR",
+  "CHAMPFROMIER",
+  "CHANAY",
+  "CHANAZ",
+  "CHANEINS",
+  "CHANOZ CHATENAY",
+  "CHARIX",
+  "CHARNOZ SUR AIN",
+  "CHATEAU GAILLARD",
+  "CHATENAY",
+  "CHATILLON EN MICHAILLE",
+  "CHATILLON LA PALUD",
+  "CHATILLON SUR CHALARONNE",
+  "CHAVANNES SUR REYSSOUZE",
+  "CHAVANNES SUR SURAN",
+  "CHAVEYRIAT",
+  "CHAVORNAY",
+  "CHAZEY BONS",
+  "CHAZEY SUR AIN",
+  "CHEIGNIEU LA BALME",
+  "CHEVILLARD",
+  "CHEVROUX",
+  "CHEVRY",
+  "CHEZERY-FORENS",
+  "CIVRIEUX",
+  "CIZE",
+  "CLEYZIEU",
+  "COLIGNY",
+  "COLLONGES",
+  "COLOMIEU",
+  "CONAND",
+  "CONDAMINE",
+  "CONDEISSIAT",
+  "CONFORT",
+  "CONFRANCON",
+  "CONTREVOZ",
+  "CONZIEU",
+  "CORBONOD",
+  "CORCELLES",
+  "CORLIER",
+  "CORMARANCHE EN BUGEY",
+  "CORMORANCHE SUR SAONE",
+  "CORMOZ",
+  "CORNOD",
+  "CORVEISSIAT",
+  "COURMANGOUX",
+  "COURTES",
+  "CRANS",
+  "CRAS SUR REYSSOUZE",
+  "CRESSIN ROCHEFORT",
+  "CROTTET",
+  "CROZET",
+  "CRUZILLES LES MEPILLAT",
+  "CULOZ",
+  "CURCIAT DONGALON",
+  "CURTAFOND",
+  "CUZIEU",
+  "DAGNEUX",
+  "DIVONNE LES BAINS",
+  "DOMPIERRE SUR CHALARONNE",
+  "DOMPIERRE SUR VEYLE",
+  "DOMSURE",
+  "DORTAN",
+  "DOUVRES",
+  "DROM",
+  "DRUILLAT",
+  "ECHALLON",
+  "ECHENEVEX",
+  "ETREZ",
+  "EVOSGES",
+  "FARAMANS",
+  "FAREINS",
+  "FARGES",
+  "FEILLENS",
+  "FERNEY VOLTAIRE",
+  "FLAXIEU",
+  "FOISSIAT",
+  "RANCHELEINS",
+  "FRANS",
+  "GARNERANS",
+  "GENAY",
+  "GENOUILLEUX",
+  "GEOVREISSET",
+  "GERMAGNAT",
+  "GEX",
+  "GIRON",
+  "GORREVOD",
+  "GRAND CORENT",
+  "GRIEGES",
+  "GRILLY",
+  "GROISSIAT",
+  "GROSLEE ST BENOIT",
+  "GUEREINS",
+  "HAUTECOURT ROMANECHE",
+  "HAUTEVILLE LOMPNES",
+  "HOSTIAZ",
+  "HOTONNES",
+  "ILLIAT",
+  "INJOUX GENISSIAT",
+  "INNIMOND",
+  "IZENAVE",
+  "IZERNORE",
+  "IZIEU",
+  "JASSANS RIOTTIER",
+  "JASSERON",
+  "JAYAT",
+  "JOURNANS",
+  "JOYEUX",
+  "JUJURIEUX",
+  "ABERGEMENT CLEMENCIAT",
+  "L ABERGEMENT DE VAREY",
+  "LA BOISSE",
+  "LA BURBANCHE",
+  "LA CHAPELLE DU CHATELARD",
+  "LA TRANCLIERE",
+  "LABALME SUR CERDON",
+  "LAGNIEU",
+  "LAIZ",
+  "LAJOUX",
+  "LALLEYRIAT",
+  "LANCRANS",
+  "LANTENAY",
+  "LAPEYROUSE",
+  "LAVOURS",
+  "LE GRAND ABERGEMENT",
+  "LE MONTELLIER",
+  "LE PLANTAY",
+  "LE POIZAT",
+  "LEAZ",
+  "LELEX",
+  "LENT",
+  "LES NEYROLLES",
+  "LESCHEROUX",
+  "LEYMENT",
+  "LEYSSARD",
+  "LHOPITAL",
+  "LHUIS",
+  "LOCHIEU",
+  "LOMPNAS",
+  "LOMPNIEU",
+  "LOYETTES",
+  "LURCY",
+  "MAGNIEU",
+  "MAILLAT",
+  "MALAFRETAZ",
+  "MANTENAY MONTLIN",
+  "MANZIAT",
+  "MARBOZ",
+  "MARCHAMP",
+  "MARIGNIEU",
+  "MARLIEUX",
+  "MARSONNAS",
+  "MARTIGNAT",
+  "MASSIEUX",
+  "MASSIGNIEU DE RIVES",
+  "MATAFELON GRANGES",
+  "MEILLONNAS",
+  "MERIGNAT",
+  "MESSIMY SUR SAONE",
+  "MEXIMIEUX",
+  "MEYRIN",
+  "MEZERIAT",
+  "MIJOUX",
+  "MIONNAY",
+  "MIRIBEL",
+  "MISERIEUX",
+  "MOGNENEINS",
+  "MONTAGNAT",
+  "MONTAGNIEU",
+  "MONTANGES",
+  "MONTCEAUX",
+  "MONTCET",
+  "MONTHIEUX",
+  "MONTLUEL",
+  "MONTMERLE SUR SAONE",
+  "MONTRACOL",
+  "MONTREAL LA CLUSE",
+  "MONTREVEL EN BRESSE",
+  "MURS ET GELIGNIEUX",
+  "NANTUA",
+  "NATTAGES",
+  "NEUVILLE LES DAMES",
+  "NEUVILLE SUR AIN",
+  "NEYRON",
+  "NIEVROZ",
+  "NIVOLLET MONTGRIFFON",
+  "NURIEUX VOLOGNAT",
+  "ONCIEU",
+  "ORDONNAZ",
+  "ORNEX",
+  "OUTRIAZ",
+  "OYONNAX",
+  "OZAN",
+  "PARCIEUX",
+  "PARVES",
+  "PERON",
+  "PERONNAS",
+  "PEROUGES",
+  "PERREX",
+  "PETIT ABERGEMENT",
+  "PEYRIAT",
+  "PEYRIEU",
+  "PEYZIEUX SUR SAONE",
+  "PIRAJOUX",
+  "PIZAY",
+  "PLAGNE",
+  "POLLIAT",
+  "POLLIEU",
+  "PONCIN",
+  "PONT D'AIN",
+  "PONT DE VAUX",
+  "PONT DE VEYLE",
+  "PORT",
+  "POUGNY",
+  "POUILLAT",
+  "PREMEYZEL",
+  "PREMILLIEU",
+  "PRESSIAT",
+  "PREVESSIN MOENS",
+  "PRIAY",
+  "PUGIEU",
+  "RAMASSE",
+  "RANCE",
+  "RELEVANT",
+  "REPLONGES",
+  "REVONNAS",
+  "REYRIEUX",
+  "REYSSOUZE",
+  "RIGNIEUX LE FRANC",
+  "RILLIEUX-LA-PAPE",
+  "ROMANS",
+  "ROSSILLON",
+  "RUFFIEU EN VALROMEY",
+  "SALAVRE",
+  "SAMOGNAT",
+  "SANDRANS",
+  "SAULT BRENAZ",
+  "SAUVERNY",
+  "SAVIGNEUX",
+  "SEGNY",
+  "SEILLONNAZ",
+  "SEPTMONCEL LES MOLUNES",
+  "SERGY",
+  "SERMOYER",
+  "SERRIERES DE BRIORD",
+  "SERRIERES SUR AIN",
+  "SERVAS",
+  "SERVIGNAT",
+  "SEYSSEL",
+  "SIMANDRE SUR SURAN",
+  "SONGIEU",
+  "SONTHONNAX LA MONTAGNE",
+  "SOUCLIN",
+  "ST ALBAN",
+  "ST ANDRE D'HUIRIAT",
+  "ST ANDRE DE BAGE",
+  "ST ANDRE DE CORCY",
+  "ST ANDRE LE BOUCHOUX",
+  "ST ANDRE SUR VIEUX JONC",
+  "ST BENIGNE",
+  "ST BERNARD",
+  "ST BOIS",
+  "ST CHAMP",
+  "ST CYR SUR MENTHON",
+  "ST DENIS EN BUGEY",
+  "ST DENIS LES BOURG",
+  "ST DIDIER D'AUSSIAT",
+  "ST DIDIER DE FORMANS",
+  "ST DIDIER SUR CHALARONNE",
+  "ST ELOI",
+  "ST ETIENNE DU BOIS",
+  "ST ETIENNE SUR CHALARONNE",
+  "ST ETIENNE SUR REYSSOUZE",
+  "ST GENIS POUILLY",
+  "ST GENIS SUR MENTHON",
+  "ST GEORGES SUR RENON",
+  "ST GERMAIN DE JOUX",
+  "ST GERMAIN LES PAROISSES",
+  "ST GERMAIN SUR RENON",
+  "ST JEAN DE GONVILLE",
+  "ST JEAN DE NIOST",
+  "ST JEAN DE THURIGNEUX",
+  "ST JEAN LE VIEUX",
+  "ST JEAN SUR REYSSOUZE",
+  "ST JEAN SUR VEYLE",
+  "ST JULIEN SUR REYSSOUZE",
+  "ST JULIEN SUR VEYLE",
+  "ST JUST",
+  "ST LAURENT SUR SAONE",
+  "ST MARCEL",
+  "ST MARTIN DE BAVEL",
+  "ST MARTIN DU FRESNE",
+  "ST MARTIN DU MONT",
+  "ST MARTIN LE CHATEL",
+  "ST MAURICE DE BEYNOST",
+  "ST MAURICE DE GOURDANS",
+  "ST MAURICE DE REMENS",
+  "ST NIZIER LE BOUCHOUX",
+  "ST NIZIER LE DESERT",
+  "ST PAUL DE VARAX",
+  "ST RAMBERT EN BUGEY",
+  "ST REMY",
+  "ST SORLIN EN BUGEY",
+  "ST SULPICE",
+  "ST TRIVIER DE COURTES",
+  "ST TRIVIER SUR MOIGNANS",
+  "ST VULBAS",
+  "STE CROIX",
+  "STE EUPHEMIE",
+  "STE JULIE",
+  "STE OLIVE",
+  "Stock EIFFAGE AMBERIEUX D'AZERGUES",
+  "Stock SIEA Viriat",
+  "SULIGNAT",
+  "SURJOUX",
+  "SUTRIEU",
+  "TALISSIEU",
+  "TENAY",
+  "THEZILLIEU",
+  "THIL",
+  "THOIRETTE",
+  "THOIRY",
+  "THOISSEY",
+  "TORCIEU",
+  "TOSSIAT",
+  "TOUSSIEUX",
+  "TRAMOYES",
+  "TREFFORT CUISIAT",
+  "TREVOUX",
+  "VALEINS",
+  "VALSERHONE",
+  "VANDEINS",
+  "VARAMBON",
+  "VAUX EN BUGEY",
+  "VENISSIEUX",
+  "VERJON",
+  "VERNOUX",
+  "VERSAILLEUX",
+  "VERSONNEX",
+  "VESANCY",
+  "VESCOURS",
+  "VESINES",
+  "VIEU",
+  "VIEU D'IZENAVE",
+  "VILLARS LES DOMBES",
+  "VILLEBOIS",
+  "VILLEMOTIER",
+  "VILLENEUVE",
+  "VILLEREVERSURE",
+  "VILLES",
+  "VILLETTE SUR AIN",
+  "Villeurbane",
+  "VILLIEU LOYES MOLLON",
+  "VIRIAT",
+  "VIRIEU LE GRAND",
+  "VIRIEU LE PETIT",
+  "VIRIGNIN",
+  "VONGNES",
+  "VONNAS"
+];
+
+    let currentTableData = [];
+    let activeCell = null;
+    let currentValues = [];
+
+    function parseTable() {
+      const raw = document.getElementById("inputData").value;
+      const rows = raw.trim().split(/\n|\r/).map(r => r.split(/\t|;/));
+      const headerRow = rows[0];
+      const indices = ["Sollicitation", "Type", "Titre", "T1", "Commune"].map(h => headerRow.findIndex(c => c.trim() === h));
+
+      currentTableData = rows.slice(1).map(row => indices.map(i => row[i] || ""));
+
+      const tableHtml = `
+        <table id="filteredTable">
+          <thead>
+            <tr>${headersWanted.map(h => `<th>${h}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${currentTableData.map(row => `
+              <tr>
+                ${row.map((cell, idx) => {
+                  if (headersWanted[idx] === "Sollicitation") {
+                    return `<td><a class="sollicitation-link" href="https://simfora.liain.fr/noc/sollicitation_detail/${cell}" target="_blank">${cell}</a></td>`;
+                  } else if (headersWanted[idx] === "Commune") {
+                    return `<td class='commune-cell' onclick="openModal(this)">${cell}</td>`;
+                  } else {
+                    return `<td>${cell}</td>`;
+                  }
+                }).join("")}
+                <td class="detail-cell" contenteditable="true" placeholder="Ajouter un détail..."></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById("tableContainer").innerHTML = tableHtml;
+    }
+	
+	function toggleCommune(checkbox) {
+  const value = checkbox.value;
+  if (checkbox.checked) {
+    if (!currentValues.includes(value)) {
+      currentValues.push(value);
+    }
+  } else {
+    currentValues = currentValues.filter(v => v !== value);
+  }
+  if (activeCell) {
+    activeCell.textContent = currentValues.join(", ");
+  }
+}
+
+    function openModal(cell) {
+      activeCell = cell;
+      currentValues = cell.textContent.split(/,|;/).map(v => v.trim()).filter(Boolean);
+      renderCommunes();
+      document.getElementById("communeModal").style.display = "flex";
+      document.getElementById("searchCommune").value = "";
+    }
+
+    function renderCommunes(filter = "") {
+  const lowerFilter = filter.toLowerCase();
+  const modalOptions = communesList.filter(commune => commune.toLowerCase().includes(lowerFilter)).map(commune => {
+    const checked = currentValues.includes(commune) ? "checked" : "";
+    return `
+      <label>
+        <input type="checkbox" value="${commune}" ${checked} onchange="toggleCommune(this)">
+        ${commune}
+      </label><br>`;
+  }).join("");
+  document.getElementById("modalOptions").innerHTML = modalOptions;
+}
+
+
+    function filterCommunes() {
+      const filter = document.getElementById("searchCommune").value;
+      renderCommunes(filter);
+    }
+
+    function applySelection() {
+      const checkboxes = document.querySelectorAll("#modalOptions input[type=checkbox]:checked");
+      const selected = Array.from(checkboxes).map(cb => cb.value);
+      if (activeCell) {
+        activeCell.textContent = selected.join(", ");
+      }
+      document.getElementById("communeModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("communeModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    function copyHtmlTableToClipboard() {
+      const table = document.querySelector("#filteredTable");
+      if (!table) return;
+
+      const range = document.createRange();
+      range.selectNode(table);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        document.execCommand('copy');
+        alert("Tableau copié dans le presse-papier ✅");
+      } catch (err) {
+        alert("Erreur lors de la copie du tableau ❌");
+      }
+
+      selection.removeAllRanges();
+    }
+  </script>
+</body>
+</html>

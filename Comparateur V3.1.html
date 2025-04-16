@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comparateur TP / SYSLOG - Axione</title>
+    <style>
+        :root {
+            --aquamarine: #01ECA6;
+            --penn-blue: #201E5B;
+        }
+
+        body {
+            font-family: 'GT Eesti Display Trial Bd', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://www.axione.com/wp-content/uploads/2024/11/adobestock_354116679-scaled.jpeg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: white;
+        }
+
+        .background-blur {
+            backdrop-filter: blur(6px);
+            min-height: 100vh;
+            padding: 50px 0 100px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 960px;
+            width: 90%;
+            margin: auto;
+            background: rgba(32, 30, 91, 0.85);
+            border: 3px solid var(--aquamarine);
+            padding: 32px;
+            border-radius: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .label {
+            font-weight: bold;
+            margin: 16px 0 8px 0;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid var(--aquamarine);
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 1em;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            display: block;
+            width: 280px;
+            margin: 20px auto;
+            padding: 16px 0;
+            border-radius: 50px;
+            border: none;
+            background-color: var(--aquamarine);
+            color: var(--penn-blue);
+            font-weight: 700;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        button:hover {
+            background: white;
+            color: var(--penn-blue);
+        }
+
+        .results {
+            margin-top: 32px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--aquamarine);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            color: var(--penn-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+        }
+
+        footer {
+            margin-top: 24px;
+            padding: 16px;
+            text-align: center;
+            font-size: 0.9em;
+            color: white;
+            background: rgba(32, 30, 91, 0.85);
+        }
+
+        footer a {
+            color: var(--aquamarine);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-blur">
+        <div class="container">
+            <div class="logo-container">
+                <img src="https://www.axione.com/wp-content/uploads/2024/09/logo-header-home.svg" alt="Logo Axione">
+            </div>
+
+            <h1>Comparateur TP / SYSLOG</h1>
+
+            <label class="label">Logs SYSLOG :</label>
+            <textarea id="syslog" placeholder="Collez ici les logs SYSLOG..."></textarea>
+
+            <label class="label">Données TP :</label>
+            <textarea id="tp" placeholder="Collez ici les données TP..."></textarea>
+
+            <label class="label">CSV de correspondance :</label>
+            <textarea id="correspondance" placeholder="Collez ici le CSV de correspondance...">
+AMBERIEUX,amberieux
+AMBERIEUX EN DOMBES,Amberieuxendombes
+AMBLEON,Ambléon
+AMBRONAY,Ambronay
+AMBUTRIX,Ambutrix
+ANDERT ET CONDON,andertetcondon
+ANGLEFORT,Anglefort
+APREMONT,Apremont
+ARANC,Aranc
+ARANDAS,Arandas
+ARBENT,Arbent
+ARBIGNIEU,Arbignieu
+ARBIGNY,Arbigny
+ARGIS,Argis
+ARMIX,armix
+ARS SUR FORMANS,Arssurformans
+ARTEMARE,Artemare
+ASNIERES SUR SAONE,asnieressursaone
+ATTIGNAT,Attignat
+BAGE DOMMARTIN,Bagedommartin
+BAGE LE CHATEL,Bagelechatel
+BALAN,Balan
+BANEINS,Baneins
+BEARD-GEOVREISSIAT,Beardgeovreissiat
+BEAUPONT,Beaupont
+BEAUREGARD,Beauregard
+BELIGNEUX,Beligneux
+BELLEGARDE SUR VALSERINE,bellegardesurvalserine
+BELLEY,Belley
+BELLEYDOUX,Belleydoux
+BELLIGNAT,Bellignat
+BELMONT LUTHEZIEU,BelmontLuthézieu
+BENONCES,Bénonces
+BENY,Beny
+BEON,Béon
+BEON,Beon
+BEREZIAT,bereziat
+BETTANT,Bettant
+BEY,Bey
+BEYNOST,Beynost
+BILLIAT,Billiat
+BIRIEUX,Birieux
+BIZIAT,Biziat
+BLYES,Blyes
+BOHAS MEYRIAT RIGNAT,bohasmeyriatrignat
+BOISSEY,Boissey
+BOLOZON,bolozon
+BOULIGNEUX,Bouligneux
+BOURG EN BRESSE,bourgenbresse
+BOURG ST CHRISTOPHE,BourgStChristophe
+BOYEUX ST JEROME,BoyeuxStJerome
+BOZ,Boz
+BRANGUES,brangues
+BREGNIER CORDON,BregnierCordon
+BRENAZ,Brenaz
+BRENOD,Brenod
+BRENS,Brens
+BRESSOLLES,Bressolles
+BRION,Brion
+BRIORD,Briord
+BUELLAS,buellas
+CAILLOUX SUR FONTAINES,caillouxsurfontaines
+CAILLOUX-SUR-FONTAINES,caillouxsurfontaines
+CEIGNES,Ceignes
+CERDON,Cerdon
+CERTINES,Certines
+CESSY,Cessy
+CEYZERIAT,Ceyzeriat
+CEYZERIEU,Ceyzerieu
+CHALAMONT,Chalamont
+CHALEINS,Chaleins
+CHALEY,chaley
+CHALLES LA MONTAGNE,challeslamontagne
+CHALLEX,Challex
+CHAMPAGNE EN VALROMEY,Champagneenvalromey
+CHAMPDOR,Champdor
+CHAMPFROMIER,Champfromier
+CHANAY,Chanay
+CHANAZ,chanaz
+CHANEINS,Chaneins
+CHANOZ CHATENAY,chanozchatenay
+CHARIX,charix
+CHARNOZ SUR AIN,charnozsurain
+CHATEAU GAILLARD,ChateauGaillard
+CHATENAY,chatenay
+CHATILLON EN MICHAILLE,chatillonenmichaille
+CHATILLON LA PALUD,Chatillonlapalud
+CHATILLON SUR CHALARONNE,Chatillonsurchalaronne
+CHAVANNES SUR REYSSOUZE,chavannessurreyssouze
+CHAVANNES SUR SURAN,chavannessursuran
+CHAVEYRIAT,Chaveyriat
+CHAVORNAY,Chavornay
+CHAZEY BONS,Chazeybons
+CHAZEY SUR AIN,ChazeySurAin
+CHEIGNIEU LA BALME,Cheignieulabalme
+CHEVILLARD,chevillard
+CHEVROUX,chevroux
+CHEVRY,Chevry
+CHEZERY-FORENS,chezeryforens
+CIVRIEUX,Civrieux
+CIZE,Cize
+CLEYZIEU,cleyzieu
+COLIGNY,Coligny
+COLLONGES,Collonges
+COLOMIEU,colomieu
+CONAND,conand
+CONDAMINE,condamine
+CONDEISSIAT,Condeissiat
+CONFORT,Confort
+CONFRANCON,Confrancon
+CONTREVOZ,Contrevoz
+CONZIEU,conzieu
+CORBONOD,Corbonod
+CORCELLES,Corcelles
+CORLIER,corlier
+CORMARANCHE EN BUGEY,CormarancheEnBugey
+CORMORANCHE SUR SAONE,CormorancheSurSaone
+CORMOZ,Cormoz
+CORNOD,cornod
+CORVEISSIAT,Corveissiat
+COURMANGOUX,Courmangoux
+COURTES,courtes
+CRANS,Crans
+CRAS SUR REYSSOUZE,CrasSurReyssouze
+CRESSIN ROCHEFORT,Cressinrochefort
+CROTTET,Crottet
+CROZET,Crozet
+CRUZILLES LES MEPILLAT,CruzillesLesMepillat
+CULOZ,Culoz
+CURCIAT DONGALON,Curciatdongalon
+CURTAFOND,Curtafond
+CUZIEU,cuzieu
+DAGNEUX,Dagneux
+DIVONNE LES BAINS,divonnelesbains
+DOMPIERRE SUR CHALARONNE,dompierresurchalaronne
+DOMPIERRE SUR VEYLE,dompierresurveyle
+DOMSURE,Domsure
+DORTAN,Dortan
+DOUVRES,Douvres
+DROM,Drom
+DRUILLAT,Druillat
+ECHALLON,Echallon
+ECHENEVEX,Echenevex
+ETREZ,Etrez
+EVOSGES,Evosges
+FARAMANS,Faramans
+FAREINS,Fareins
+FARGES,Farges
+FEILLENS,Feillens
+FERNEY VOLTAIRE,Ferneyvoltaire
+FLAXIEU,Flaxieu
+FOISSIAT,Foissiat
+RANCHELEINS,rancheleins
+FRANS,Frans
+GARNERANS,Garnerans
+GENAY,genay
+GENOUILLEUX,Genouilleux
+GEOVREISSET,Geovreisset
+GERMAGNAT,germagnat
+GEX,Gex
+GIRON,Giron
+GORREVOD,Gorrevod
+GRAND CORENT,grandcorent
+GRIEGES,Grieges
+GRILLY,Grilly
+GROISSIAT,Groissiat
+GROSLEE ST BENOIT,Grosleestbenoit
+GUEREINS,Guereins
+HAUTECOURT ROMANECHE,hautecourtromaneche
+HAUTEVILLE LOMPNES,Hautevillelompnes
+HOSTIAZ,hostiaz
+HOTONNES,hotonnes
+ILLIAT,illiat
+INJOUX GENISSIAT,injouxgenissiat
+INNIMOND,innimond
+IZENAVE,Izenave
+IZERNORE,Izernore
+IZIEU,izieu
+JASSANS RIOTTIER,Jassansriottier
+JASSERON,jasseron
+JAYAT,Jayat
+JOURNANS,journans
+JOYEUX,joyeux
+JUJURIEUX,Jujurieux
+ABERGEMENT CLEMENCIAT,abergementclemenciat
+L ABERGEMENT DE VAREY,LabergementDeVarey
+LA BOISSE,Laboisse
+LA BURBANCHE,Laburbanche
+LA CHAPELLE DU CHATELARD,lachapelleduchatelard
+LA TRANCLIERE,LaTranclière
+LABALME SUR CERDON,labalmesurcerdon
+LAGNIEU,Lagnieu
+LAIZ,Laiz
+LAJOUX,lajoux
+LALLEYRIAT,lalleyriat
+LANCRANS,Lancrans
+LANTENAY,lantenay
+LAPEYROUSE,Lapeyrouse
+LAVOURS,lavours
+LE GRAND ABERGEMENT,legrandabergement
+LE MONTELLIER,Lemontellier
+LE PLANTAY,Leplantay
+LE POIZAT,LePoizat
+LEAZ,Leaz
+LELEX,Lelex
+LENT,lent
+LES NEYROLLES,LesNeyrolles
+LESCHEROUX,Lescheroux
+LEYMENT,Leyment
+LEYSSARD,Leyssard
+LHOPITAL,lhopital
+LHUIS,Lhuis
+LOCHIEU,lochieu
+LOMPNAS,lompnas
+LOMPNIEU,lompnieu
+LOYETTES,Loyettes
+LURCY,Lurcy
+MAGNIEU,Magnieu
+MAILLAT,Maillat
+MALAFRETAZ,Malafretaz
+MANTENAY MONTLIN,Mantenaymontlin
+MANZIAT,Manziat
+MARBOZ,Marboz
+MARCHAMP,Marchamp
+MARIGNIEU,Marignieu
+MARLIEUX,marlieux
+MARSONNAS,Marsonnas
+MARTIGNAT,Martignat
+MASSIEUX,Massieux
+MASSIGNIEU DE RIVES,massignieuderives
+MATAFELON GRANGES,matafelongranges
+MEILLONNAS,Meillonnas
+MERIGNAT,merignat
+MESSIMY SUR SAONE,Messimysursaone
+MEXIMIEUX,Meximieux
+MEYRIN,meyrin
+MEZERIAT,Mezeriat
+MIJOUX,Mijoux
+MIONNAY,Mionnay
+MIRIBEL,Miribel
+MISERIEUX,Miserieux
+MOGNENEINS,Mogneneins
+MONTAGNAT,Montagnat
+MONTAGNIEU,Montagnieu
+MONTANGES,Montanges
+MONTCEAUX,Montceaux
+MONTCET,montcet
+MONTHIEUX,Monthieux
+MONTLUEL,Montluel
+MONTMERLE SUR SAONE,Montmerlesursaone
+MONTRACOL,montracol
+MONTREAL LA CLUSE,Montreallacluse
+MONTREVEL EN BRESSE,Montrevelenbresse
+MURS ET GELIGNIEUX,Mursetgelignieux
+NANTUA,Nantua
+NATTAGES,Nattages
+NEUVILLE LES DAMES,neuvillelesdames
+NEUVILLE SUR AIN,neuvillesurain
+NEYRON,Neyron
+NIEVROZ,Nievroz
+NIVOLLET MONTGRIFFON,nivolletmontgriffon
+NURIEUX VOLOGNAT,Nurieux-Volognat
+NURIEUX VOLOGNAT,Nurieuxvolognat
+ONCIEU,oncieu
+ORDONNAZ,ordonnaz
+ORNEX,Ornex
+OUTRIAZ,Outriaz
+OYONNAX,Oyonnax
+OZAN,Ozan
+PARCIEUX,Parcieux
+PARVES,parves
+PERON,Peron
+PERONNAS,Peronnas
+PEROUGES,Perouges
+PERREX,Perrex
+PETIT ABERGEMENT,petitabergement
+PEYRIAT,peyriat
+PEYRIEU,peyrieu
+PEYZIEUX SUR SAONE,peyzieuxsursaone
+PIRAJOUX,Pirajoux
+PIZAY,Pizay
+PLAGNE,Plagne
+POLLIAT,polliat
+POLLIEU,Pollieu
+PONCIN,Poncin
+PONT D'AIN,Pontdain
+PONT DE VAUX,PontDeVaux
+PONT DE VEYLE,Pontdeveyle
+PORT,Port
+POUGNY,Pougny
+POUILLAT,Pouillat
+PREMEYZEL,premeyzel
+PREMILLIEU,premillieu
+PRESSIAT,pressiat
+PREVESSIN MOENS,prevessinmoens
+PRIAY,Priay
+PUGIEU,pugieu
+RAMASSE,Ramasse
+RANCE,Rance
+RELEVANT,Relevant
+REPLONGES,Replonges
+REVONNAS,Revonnas
+REYRIEUX,Reyrieux
+REYSSOUZE,Reyssouze
+RIGNIEUX LE FRANC,RignieuxLeFranc
+RILLIEUX-LA-PAPE,rillieuxlapape
+ROMANS,Romans
+ROSSILLON,rossillon
+RUFFIEU EN VALROMEY,ruffieuenvalromey
+SALAVRE,Salavre
+SAMOGNAT,Samognat
+SANDRANS,Sandrans
+SAULT BRENAZ,SaultBrénaz
+SAULT BRENAZ,SaultBrenaz
+SAUVERNY,Sauverny
+SAVIGNEUX,Savigneux
+SEGNY,Segny
+SEILLONNAZ,seillonnaz
+SEPTMONCEL LES MOLUNES,septmoncellesmolunes
+SERGY,Sergy
+SERMOYER,Sermoyer
+SERRIERES DE BRIORD,SerrieresDeBriord
+SERRIERES SUR AIN,serrieressurain
+SERVAS,servas
+SERVIGNAT,servignat
+SEYSSEL,Seyssel
+SIMANDRE SUR SURAN,SimandresurSuran
+SONGIEU,songieu
+SONTHONNAX LA MONTAGNE,sonthonnaxlamontagne
+SOUCLIN,Souclin
+ST ALBAN,Stalban
+ST ANDRE D'HUIRIAT,StAndredHuiriat
+ST ANDRE DE BAGE,Standredebage
+ST ANDRE DE CORCY,Standredecorcy
+ST ANDRE LE BOUCHOUX,Standrelebouchoux
+ST ANDRE SUR VIEUX JONC,StAndresurVieuxJonc
+ST BENIGNE,StBenigne
+ST BERNARD,Stbernard
+ST BOIS,stbois
+ST CHAMP,stchamp
+ST CYR SUR MENTHON,StCyrSurMenthon
+ST DENIS EN BUGEY,Stdenisenbugey
+ST DENIS LES BOURG,stdenislesbourg
+ST DIDIER D'AUSSIAT,StDidierdAussiat
+ST DIDIER DE FORMANS,stdidierdeformans
+ST DIDIER SUR CHALARONNE,Stdidiersurchalaronne
+ST ELOI,StEloi
+ST ETIENNE DU BOIS,Stetiennedubois
+ST ETIENNE SUR CHALARONNE,stetiennesurchalaronne
+ST ETIENNE SUR REYSSOUZE,Stetiennesurreyssouze
+ST GENIS POUILLY,StGenisPouilly
+ST GENIS SUR MENTHON,StGenisSurMenthon
+ST GEORGES SUR RENON,stgeorgessurrenon
+ST GERMAIN DE JOUX,StGermainDeJoux
+ST GERMAIN LES PAROISSES,stgermainlesparoisses
+ST GERMAIN SUR RENON,stgermainsurrenon
+ST JEAN DE GONVILLE,StJeandeGonville
+ST JEAN DE NIOST,StJeanDeNiost
+ST JEAN DE THURIGNEUX,StJeandeThurigneux
+ST JEAN LE VIEUX,Stjeanlevieux
+ST JEAN SUR REYSSOUZE,Stjeansurreyssouze
+ST JEAN SUR VEYLE,StJeanSurVeyle
+ST JULIEN SUR REYSSOUZE,stjuliensurreyssouze
+ST JULIEN SUR VEYLE,StJulienSurVeyle
+ST JUST,stjust
+ST LAURENT SUR SAONE,stlaurentsursaone
+ST MARCEL,stmarcel
+ST MARTIN DE BAVEL,Stmartindebavel
+ST MARTIN DU FRESNE,Stmartindufresne
+ST MARTIN DU MONT,Stmartindumont
+ST MARTIN LE CHATEL,StMartinLeChatel
+ST MAURICE DE BEYNOST,Stmauricedebeynost
+ST MAURICE DE GOURDANS,Stmauricedegourdans
+ST MAURICE DE REMENS,Stmauricederemens
+ST NIZIER LE BOUCHOUX,Stnizierlebouchoux
+ST NIZIER LE DESERT,StNizierLeDesert
+ST PAUL DE VARAX,Stpauldevarax
+ST RAMBERT EN BUGEY,Strambertenbugey
+ST REMY,stremy
+ST SORLIN EN BUGEY,StSorlinEnBugey
+ST SULPICE,stsulpice
+ST TRIVIER DE COURTES,StTrivierdeCourtes
+ST TRIVIER SUR MOIGNANS,StTrivierSurMoignans
+ST VULBAS,StVulbas
+STE CROIX,SteCroix
+STE EUPHEMIE,SteEuphémie
+STE JULIE,SteJulie
+STE OLIVE,steolive
+Stock EIFFAGE AMBERIEUX D'AZERGUES,stockeiffageamberieuxdazergues
+Stock SIEA Viriat,stocksieaviriat
+SULIGNAT,Sulignat
+SURJOUX,surjoux
+SUTRIEU,Sutrieu
+TALISSIEU,Talissieu
+TENAY,Tenay
+THEZILLIEU,Thezillieu
+THIL,Thil
+THOIRETTE,thoirette
+THOIRY,Thoiry
+THOISSEY,thoissey
+TORCIEU,Torcieu
+TOSSIAT,tossiat
+TOUSSIEUX,Toussieux
+TRAMOYES,Tramoyes
+TREFFORT CUISIAT,treffortcuisiat
+TREVOUX,Trévoux
+TREVOUX,Trevoux
+VALEINS,valeins
+VALSERHONE,valserhone
+VANDEINS,vandeins
+VARAMBON,Varambon
+VAUX EN BUGEY,Vauxenbugey
+VENISSIEUX,venissieux
+VERJON,Verjon
+VERNOUX,Vernoux
+VERSAILLEUX,versailleux
+VERSONNEX,Versonnex
+VESANCY,Vesancy
+VESCOURS,Vescours
+VESINES,vesines
+VIEU,vieu
+VIEU D'IZENAVE,Vieudizenave
+VILLARS LES DOMBES,villarslesdombes
+VILLEBOIS,Villebois
+VILLEMOTIER,Villemotier
+VILLENEUVE,Villeneuve
+VILLEREVERSURE,Villereversure
+VILLES,Villes
+VILLETTE SUR AIN,Villettesurain
+VILLEURBANE,Villeurbane
+VILLIEU LOYES MOLLON,Villieuloyesmollon
+VIRIAT,Viriat
+VIRIEU LE GRAND,Virieulegrand
+VIRIEU LE PETIT,Virieulepetit
+VIRIGNIN,Virignin
+VONGNES,Vongnes
+VONNAS,Vonnas</textarea>
+
+            <button onclick="comparer()">Comparer</button>
+
+            <div id="resultat" class="results"></div>
+        </div>
+    </div>
+
+    <footer>
+        💡 Script développé par Victor Barthélemy — Pour toute réclamation, merci de fournir café et chocolatine ☕🥐
+    </footer>
+
+  <script>
+function comparer() {
+    const logs = document.getElementById('syslog').value.split('\n');
+    const tp = document.getElementById('tp').value.split('\n').slice(1);
+    const correspondances = document.getElementById('correspondance').value
+        .split('\n')
+        .map(ligne => ligne.split(','))
+        .filter(c => c.length === 2);
+
+    let mapResultats = new Map();
+
+    logs.forEach(log => {
+        correspondances.forEach(([villeTP, villeLOG]) => {
+            if (log.includes(villeLOG.trim())) {
+                tp.forEach(ligneTP => {
+                    const colonnesTP = ligneTP.split('\t').map(col => col.trim());
+                    if (colonnesTP.length >= 5 && colonnesTP[4].includes(villeTP.trim().toUpperCase())) {
+                        const sollicitation = colonnesTP[0];
+                        const alarmeMatch = log.match(/NETADMIN-[A-Z]-([^\s]+)/);
+                        const equipementMatch = log.match(/-\s([A-Za-z0-9_]+)\s-/);
+
+                        const alarmeTech = alarmeMatch ? alarmeMatch[1] : "Alarme non précisée";
+                        const equipementNom = equipementMatch ? equipementMatch[1] : "Équipement inconnu";
+
+                        const cle = `${alarmeTech}|${equipementNom}`;
+                        if (!mapResultats.has(cle)) {
+                            mapResultats.set(cle, new Set());
+                        }
+
+                        mapResultats.get(cle).add(sollicitation);
+                    }
+                });
+            }
+        });
+    });
+
+    const resultatHTML = Array.from(mapResultats.entries()).map(([cle, sollicitations]) => {
+        const [alarmeTech, equipementNom] = cle.split('|');
+        const liens = Array.from(sollicitations)
+            .map(s => `<a href="https://simfora.liain.fr/noc/sollicitation_detail/${s}" target="_blank"><strong>${s}</strong></a>`)
+            .join(' ou ');
+        return `<div class="card">⚠️ <strong>${alarmeTech}</strong> sur <strong>${equipementNom}</strong> lié à la sollicitation : ${liens}</div>`;
+    }).join('');
+
+    document.getElementById('resultat').innerHTML = resultatHTML || '<div class="card">✅ Aucune correspondance trouvée.</div>';
+}
+
+
+</script>
+</body>
+
+</html>
